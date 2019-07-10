@@ -85,25 +85,58 @@ class NavDropdownExample extends React.Component{
         )
     }
   }
+  const  programlist = ['Tsunami','Cicada/Mantis', 'Birds','Dorado/Marlin', 'Star/Stella']
 
   class Projects extends React.Component {
+    constructor(props) {
+        super(props)      
+
+        this.state = { 
+            searchkeywords: '',
+            findprogram: [],
+        }
+
+        this.findprogram = this.findprogram.bind(this);    
+    }
+
+    findprogram(){
+        //alert(`Search keywords ${this.state.searchkeywords.trim()}`);
+        var new_programlist = []
+        for (let i = 0; i < programlist.length; i++) {
+            //var a = programlist[i].match(this.state.searchkeywords.trim());
+            var a = programlist[i].toLowerCase();
+            var b = a.match(this.state.searchkeywords.trim());
+            if (b!=null){
+                new_programlist.push(a)
+            }            
+        }
+        this.setState({findprogram: new_programlist})
+        alert(this.state.findprogram)
+    }
+
+    renderFindProgram(){
+        var str = ""        
+        for (let i = 0; i < this.state.findprogram.length; i++) {
+            str += '<tr><td>'+this.state.findprogram[i]+'</td></tr>'
+        }        
+        return(
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>Find {this.state.findprogram.length} matched programs.</th>
+                    </tr>
+                </thead>
+                <tbody> {str} </tbody>
+            </Table>
+        )
+    }
+
     render() {
         return(
-            <Container fluid class="panel panel-primary">
+            <Container fluid>
                 <Row>
                     <Col xs={6} md={4}>
                         <ListGroup variant="flush" as="ul">
-                            <ListGroup.Item as="li">
-                                <Form inline>                                    
-                                    <Button variant="primary">Create Project</Button>                                    
-                                </Form>
-                            </ListGroup.Item>
-                            <ListGroup.Item as="li">
-                                <Form inline>
-                                    <FormControl type="text" placeholder="Search" className="col-xs-2"/>
-                                    &nbsp; <Button variant="primary">Search</Button>
-                                </Form>
-                            </ListGroup.Item>
                             <ListGroup.Item as="li" disabled>
                                 Project Overview
                             </ListGroup.Item>
@@ -120,9 +153,30 @@ class NavDropdownExample extends React.Component{
                                 &nbsp;&nbsp;Archive:<Badge variant="secondary">12</Badge>
                             </ListGroup.Item>
                         </ListGroup>
+                        <ListGroup style={{textAlign: "center"}}>
+                            <ListGroup.Item as="li" >
+                                <Form>                                    
+                                    <Button variant="primary">Create Project</Button>                                    
+                                </Form>
+                            </ListGroup.Item>
+                        </ListGroup>
+                        <ListGroup as="ul">
+                            <ListGroup.Item as="li">
+                                <Form inline>
+                                    <FormControl type="text" placeholder="Search" className="col-xs-2"
+                                    onChange={(e) => {
+                                        this.setState({
+                                            searchkeywords: e.target.value.toLowerCase(),});
+                                        }
+                                    }/>
+                                    &nbsp; <Button variant="primary" onClick={this.findprogram}>Search</Button>
+                                </Form>
+                            </ListGroup.Item>
+                        </ListGroup>
+                        {this.renderFindProgram()}
                     </Col>
                     <Col xs={12} md={8}>
-                        <Container fluid>
+                        <Container fluid className="panel panel-default">
                             <Row>
                                 <Col> <h3>My Projects</h3></Col>                               
                             </Row>
@@ -172,7 +226,7 @@ class NavDropdownExample extends React.Component{
                             </Row>
                             <Row></Row>
                         </Container>
-                        <Container fluid>
+                        <Container fluid className="panel panel-default">
                             <Row>
                                 <Col><h3>Watching Projects</h3></Col>
                             </Row>
@@ -224,7 +278,7 @@ class NavDropdownExample extends React.Component{
 
     selectedKey(e) {
         this.setState({selectedmenu: e});
-        alert(`Selected: ${e}, ${this.state.selectedmenu}`)       
+        //alert(`Selected: ${e}, ${this.state.selectedmenu}`)       
     }
 
     renderNavbar() {
@@ -234,7 +288,7 @@ class NavDropdownExample extends React.Component{
 
     }
     renderContentPage() {
-        if (this.state.selectedmenu =="1")
+        if (this.state.selectedmenu == "1")
             return (
                 <Dashboard />
             )
