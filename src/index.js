@@ -107,7 +107,7 @@ import Projects from './project.js';
 
     render() {
       return (  
-        <Container fluid>            
+        <Container fluid style={{minWidth:"1000px", maxWidth:"1200px"}}>            
             {this.renderNavbar()}
             {this.renderContentPage()}
         </Container>
