@@ -114,6 +114,7 @@ import Projects from './project.js';
       )
     }
   }
-ReactDOM.render(
+  
+  ReactDOM.render(
     <Mainpage />,
     document.getElementById('root'));

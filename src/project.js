@@ -2,8 +2,9 @@ import React from 'react'
 import './index.css'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/css/bootstrap-theme.css'
-import { Container,Form,FormControl,Button,ListGroup, Col, Row,Badge, Table } from 'react-bootstrap';
-import GridLayout  from 'react-grid-layout';
+import { Form,FormControl,Button,ListGroup, Col, Row,Badge } from 'react-bootstrap'
+import GridLayout  from 'react-grid-layout'
+import Projectinfo from './projectinfo';
 
 class ProjectList extends React.Component {
     constructor(props) {
@@ -20,19 +21,14 @@ class ProjectList extends React.Component {
     render() {
     // layout is an array of objects, see the demo for more complete usage
     var layout = [];
-    //  {i: 'a', x: 0, y: 0, w: 1, h: 1, static: true},
-    //  {i: 'b', x: 1, y: 0, w: 1, h: 1, static: true},
-    //  {i: 'c', x: 2, y: 0, w: 1, h: 1, static: true},
-    //  {i: 'd', x: 3, y: 0, w: 1, h: 1, static: true},
-    //  {i: 'e', x: 0, y: 1, w: 1, h: 1, static: true},
-    //  {i: 'f', x: 1, y: 1, w: 1, h: 1, static: true},
+
     for (let i = 0; i < this.state.projects.length; i++) {
-        layout.push({i:this.state.projects[i].key, x: parseInt(i%4),y: parseInt(i/4), w: 1, h: 1, static: true})
+        layout.push({i:this.state.projects[i].programid, x: parseInt(i%4),y: parseInt(i/4), w: 1, h: 1, static: true})
     }
     var array=[]
     for (let i = 0; i < this.state.projects.length; i++) {
         array.push(
-            <div key={this.state.projects[i].key}>
+            <div key={this.state.projects[i].programid}>
                 <Row>
                     <Col style={{textAlign:"center"}}>
                         <h1>
@@ -42,7 +38,7 @@ class ProjectList extends React.Component {
                 </Row>
                 <Row>
                     <Col style={{textAlign:"center"}}>
-                        <a href="#">
+                        <a href="#" onClick={()=>this.props.selectProject(this.state.projects[i].programid)}>
                             <h5>
                                 {this.state.projects[i].projectmame}
                                 <br/>
@@ -94,7 +90,6 @@ class Projectpenal extends React.Component {
 
     addwatch(program_key){
         alert(program_key);
-        props.
     }
 
     renderFindProgram(){
@@ -111,8 +106,8 @@ class Projectpenal extends React.Component {
                     <ListGroup.Item as="li">
                         <span class="glyphicon glyphicon-folder-open" aria-hidden="true" >
                         </span>&nbsp;&nbsp;{this.state.findprogram[i].projectmame}&nbsp;&nbsp;
-                        <Button id = {this.state.findprogram[i].key} variant="primary" style={{float: "right"}} disabled={this.state.findprogram[i].flag_watch||this.state.findprogram[i].flag_owner ? true: false} 
-                            onClick={(e) => this.addwatch(this.state.findprogram[i].key)}>
+                        <Button id = {this.state.findprogram[i].programid} variant="primary" style={{float: "right"}} disabled={this.state.findprogram[i].flag_watch||this.state.findprogram[i].flag_owner ? true: false} 
+                            onClick={(e) => this.addwatch(this.state.findprogram[i].programid)}>
                             <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
                         </Button>
                     </ListGroup.Item>
@@ -171,47 +166,65 @@ class Projectpenal extends React.Component {
     }
 }
 class Projects extends React.Component {
-render() {
-    return(
-        <div style={{minWidth:"1000px", maxWidth:"1200px"}}>
-            <Row>
-                <Projectpenal />
-                <Col style={{width: "70%", minWidth:"680px", maxWidth:"950px"}}>
+    constructor(props) {
+        super(props)      
+
+        this.state = { 
+            showProjectAll: true,
+            Projectid: '0000',
+        }
+        this.selectProject = this.selectProject.bind(this);
+    }
+    selectProject(projectid){
+        this.setState({Projectid: projectid, showProjectAll: false,});
+    }
+    render() {
+        if  (this.state.showProjectAll){        
+            return(
+                <div style={{minWidth:"1000px", maxWidth:"1200px"}}>
                     <Row>
-                        <Col> <h3>My Projects</h3></Col>                               
+                        <Projectpenal />
+                        <Col style={{width: "70%", minWidth:"680px", maxWidth:"950px"}}>
+                            <Row>
+                                <Col> <h3>My Projects</h3></Col>                               
+                            </Row>
+                            <ProjectList items={myprojects} selectProject={this.selectProject}/>
+                            <Row>
+                                <Col><h3>Watching Projects</h3></Col>
+                            </Row>
+                            <ProjectList items={mywatchprojects} selectProject={this.selectProject}/>                                         
+                        </Col>
                     </Row>
-                    <ProjectList items={myprojects}/>
-                    <Row>
-                        <Col><h3>Watching Projects</h3></Col>
-                    </Row>
-                    <ProjectList items={mywatchprojects}/>                                           
-                </Col>
-            </Row>
-        </div>
-        )
+                </div>
+            )
+        }else{
+            return(                
+                <Projectinfo programid={this.state.Projectid}/>
+            )
+        }
     }
 }
-var myprojects = [{key: '0001', projectmame: 'AZNP ULT', status: 'Ongoing', introdate: 'Oct 1, 2019', color: '#0044dd'}, 
-                    {key: '0002', projectmame: 'Rivers', status: 'Ongoing', introdate: 'May 1, 2019', color: '#0044dd'},
-                    {key: '0003', projectmame: 'Knight', status: 'Completed', introdate: 'Apr 1, 2018', color:'#777777'},                    
+var myprojects = [{programid: '0001', projectmame: 'AZNP ULT', status: 'Ongoing', introdate: 'Oct 1, 2019', color: '#0044dd'}, 
+                    {programid: '0002', projectmame: 'Rivers', status: 'Ongoing', introdate: 'May 1, 2019', color: '#0044dd'},
+                    {programid: '0003', projectmame: 'Knight', status: 'Completed', introdate: 'Apr 1, 2018', color:'#777777'},                    
                     ]
-var mywatchprojects = [{key: '0004', projectmame: 'AZNP ', status: 'Completed', introdate: 'Oct 1, 2019', color:'#777777' },
-                        {key: '0005', projectmame: 'Seagull/Swan', status: 'Completed', introdate: 'Oct 1, 2019', color:'#777777'},
-                        {key: '0006', projectmame: 'ULT', status: 'Completed', introdate: 'Apr 1, 2017', color:'#777777'},
+var mywatchprojects = [{programid: '0004', projectmame: 'AZNP ', status: 'Completed', introdate: 'Oct 1, 2019', color:'#777777' },
+                        {programid: '0005', projectmame: 'Seagull/Swan', status: 'Completed', introdate: 'Oct 1, 2019', color:'#777777'},
+                        {programid: '0006', projectmame: 'ULT', status: 'Completed', introdate: 'Apr 1, 2017', color:'#777777'},
                     ]
-const  programlist = [{key: '0001', projectmame: 'AZNP ULT', status: 'Ongoing', introdate: 'Oct 1, 2019', flag_owner:true, flag_watch: false,  color: '#0044dd'}, 
-                        {key: '0002', projectmame: 'Rivers', status: 'Ongoing', introdate: 'May 1, 2019', flag_owner:true, flag_watch: false, color: '#0044dd'},
-                        {key: '0003', projectmame: 'Knight', status: 'Completed', introdate: 'Apr 1, 2018', flag_owner:true, flag_watch: false, color:'#777777'},
-                        {key: '0004', projectmame: 'AZNP ', status: 'Completed', introdate: 'Oct 1, 2019', flag_owner:false, flag_watch: true, color:'#777777' },
-                        {key: '0005', projectmame: 'Seagull/Swan', status: 'Completed', introdate: 'Oct 1, 2019', flag_owner:false, flag_watch: true, color:'#777777'},
-                        {key: '0006', projectmame: 'ULT', status: 'Completed', introdate: 'Apr 1, 2017', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {key: '0007', projectmame: 'Mama', status: 'Completed', introdate: 'Oct 1, 2018', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {key: '0008', projectmame: 'Mantis/LonePine', status: 'Completed', introdate: 'May 1, 2018', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {key: '0009', projectmame: 'ULT', status: 'Completed', introdate: 'Oct 1, 2017', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {key: '0010', projectmame: 'Cicada/Tsunami', status: 'Completed', introdate: 'Dec 1, 2017', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {key: '0011', projectmame: 'Astro', status: 'Completed', introdate: 'Apr 1, 2017',flag_owner:false, flag_watch: false,  color:'#777777'},
-                        {key: '0012', projectmame: 'Birds', status: 'Completed', introdate: 'Nov 1, 2015',flag_owner:false, flag_watch: false,  color:'#777777'},
-                        {key: '0013', projectmame: 'Dorado/Marlin', status: 'Completed', introdate: 'Nov 1, 2014', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {key: '0014', projectmame: 'Star/Stella', status: 'Completed', introdate: 'Jun 1, 2012', flag_owner:false, flag_watch: false, color:'#777777'},]
+const  programlist = [{programid: '0001', projectmame: 'AZNP ULT', status: 'Ongoing', introdate: 'Oct 1, 2019', flag_owner:true, flag_watch: false,  color: '#0044dd'}, 
+                        {programid: '0002', projectmame: 'Rivers', status: 'Ongoing', introdate: 'May 1, 2019', flag_owner:true, flag_watch: false, color: '#0044dd'},
+                        {programid: '0003', projectmame: 'Knight', status: 'Completed', introdate: 'Apr 1, 2018', flag_owner:true, flag_watch: false, color:'#777777'},
+                        {programid: '0004', projectmame: 'AZNP ', status: 'Completed', introdate: 'Oct 1, 2019', flag_owner:false, flag_watch: true, color:'#777777' },
+                        {programid: '0005', projectmame: 'Seagull/Swan', status: 'Completed', introdate: 'Oct 1, 2019', flag_owner:false, flag_watch: true, color:'#777777'},
+                        {programid: '0006', projectmame: 'ULT', status: 'Completed', introdate: 'Apr 1, 2017', flag_owner:false, flag_watch: false, color:'#777777'},
+                        {programid: '0007', projectmame: 'Mama', status: 'Completed', introdate: 'Oct 1, 2018', flag_owner:false, flag_watch: false, color:'#777777'},
+                        {programid: '0008', projectmame: 'Mantis/LonePine', status: 'Completed', introdate: 'May 1, 2018', flag_owner:false, flag_watch: false, color:'#777777'},
+                        {programid: '0009', projectmame: 'ULT', status: 'Completed', introdate: 'Oct 1, 2017', flag_owner:false, flag_watch: false, color:'#777777'},
+                        {programid: '0010', projectmame: 'Cicada/Tsunami', status: 'Completed', introdate: 'Dec 1, 2017', flag_owner:false, flag_watch: false, color:'#777777'},
+                        {programid: '0011', projectmame: 'Astro', status: 'Completed', introdate: 'Apr 1, 2017',flag_owner:false, flag_watch: false,  color:'#777777'},
+                        {programid: '0012', projectmame: 'Birds', status: 'Completed', introdate: 'Nov 1, 2015',flag_owner:false, flag_watch: false,  color:'#777777'},
+                        {programid: '0013', projectmame: 'Dorado/Marlin', status: 'Completed', introdate: 'Nov 1, 2014', flag_owner:false, flag_watch: false, color:'#777777'},
+                        {programid: '0014', projectmame: 'Star/Stella', status: 'Completed', introdate: 'Jun 1, 2012', flag_owner:false, flag_watch: false, color:'#777777'},]
 
 export default Projects;
