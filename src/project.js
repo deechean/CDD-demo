@@ -4,7 +4,9 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/css/bootstrap-theme.css'
 import { Form,FormControl,Button,ListGroup, Col, Row,Badge } from 'react-bootstrap'
 import GridLayout  from 'react-grid-layout'
-import Projectinfo from './projectinfo';
+import Projectinfo from './projectinfo'
+import axios from 'axios'
+import {getUrl} from './common/comutil';
 
 class ProjectList extends React.Component {
     constructor(props) {
@@ -13,22 +15,25 @@ class ProjectList extends React.Component {
         projects: [],
         };
     }
-    
-    componentWillMount(){
-       this.setState({projects: this.props.items})
+
+    componentDidMount(){
+        console.log('this.props.items')
+        console.log(this.props.items)
+        this.setState({
+            projects: this.props.items,
+        })
     }
 
     render() {
     // layout is an array of objects, see the demo for more complete usage
     var layout = [];
-
+    var array=[];
+    console.log('ProjectList-render: this.state.projects.length')
+    console.log(this.state.projects.length)    
     for (let i = 0; i < this.state.projects.length; i++) {
-        layout.push({i:this.state.projects[i].programid, x: parseInt(i%4),y: parseInt(i/4), w: 1, h: 1, static: true})
-    }
-    var array=[]
-    for (let i = 0; i < this.state.projects.length; i++) {
+        layout.push({i:this.state.projects[i].id.toString(), x: parseInt(i%4),y: parseInt(i/4), w: 1, h: 1, static: true})
         array.push(
-            <div key={this.state.projects[i].programid}>
+            <div key={this.state.projects[i].id.toString()}>
                 <Row>
                     <Col style={{textAlign:"center"}}>
                         <h1>
@@ -38,9 +43,9 @@ class ProjectList extends React.Component {
                 </Row>
                 <Row>
                     <Col style={{textAlign:"center"}}>
-                        <a href="#" onClick={()=>this.props.selectProject(this.state.projects[i].programid)}>
+                        <a href="#" onClick={()=>this.props.selectProject(this.state.projects[i].id)}>
                             <h5>
-                                {this.state.projects[i].projectmame}
+                                {this.state.projects[i].programname}
                                 <br/>
                                 Intro:{this.state.projects[i].introdate}
                                 <br/>statu:{this.state.projects[i].status}
@@ -51,6 +56,8 @@ class ProjectList extends React.Component {
             </div>
             )
         }
+        console.log(layout) 
+        console.log(array)
     return (
         <GridLayout className="layout panel panel-default" layout={layout} cols={4} rowHeight={140} width={700}>
             {array}        
@@ -77,7 +84,7 @@ class Projectpenal extends React.Component {
         if (this.state.searchkeywords.length != 0){
             var new_programlist = []
             for (let i = 0; i < programlist.length; i++) {
-                //alert(programlist[i])
+                
                 var a = programlist[i].projectmame.toLowerCase();
                 var b = a.match(this.state.searchkeywords.trim());
                 if (b!=null){
@@ -89,7 +96,7 @@ class Projectpenal extends React.Component {
     }
 
     addwatch(program_key){
-        alert(program_key);
+        //alert(program_key);
     }
 
     renderFindProgram(){
@@ -170,16 +177,54 @@ class Projects extends React.Component {
         super(props)      
 
         this.state = { 
+            userid: 1,
             showProjectAll: true,
             Projectid: '0000',
+            myprojectsload: false,
+            myprojects:[],            
+            mywatchprojectsload:false,
+            mywatchprojects:[],
         }
         this.selectProject = this.selectProject.bind(this);
+        
     }
+
+    componentDidMount(){
+        this.querymyprogram();
+    }
+    
+    querymyprogram(){
+        console.log(getUrl('/program/findbyownerid?ownerid=')+this.state.userid);
+        axios.get(getUrl('/program/findbyownerid?ownerid=')+this.state.userid).then((response)=>{           
+            this.setState({
+                myprojects: response.data,
+                myprojectsload: true,
+            });
+        }).catch(function(error) {            
+            console.error(error);
+          });
+        ;
+        axios.get(getUrl('/program/findwatchprogram?userid=')+this.state.userid).then((response)=>{         
+            this.setState({
+                mywatchprojects: response.data,
+                mywatchprojectsload: true,
+            });
+        }).catch(function(error) {            
+            console.error(error);
+          });      
+    }
+
     selectProject(projectid){
-        this.setState({Projectid: projectid, showProjectAll: false,});
+        this.setState({
+                    Projectid: projectid, 
+                    showProjectAll: false,
+                });
     }
     render() {
-        if  (this.state.showProjectAll){        
+        if  (this.state.showProjectAll){
+            if (this.state.myprojectsload&&this.state.mywatchprojectsload){               
+            console.log('Find '+ this.state.myprojects.length+' my projects: ')
+            console.log('Find '+ this.state.mywatchprojects.length+' watch projects: ')    
             return(
                 <div style={{minWidth:"1000px", maxWidth:"1200px"}}>
                     <Row>
@@ -188,15 +233,19 @@ class Projects extends React.Component {
                             <Row>
                                 <Col> <h3>My Projects</h3></Col>                               
                             </Row>
-                            <ProjectList items={myprojects} selectProject={this.selectProject}/>
+                            <ProjectList items={this.state.myprojects} selectProject={this.selectProject}/>
                             <Row>
                                 <Col><h3>Watching Projects</h3></Col>
                             </Row>
-                            <ProjectList items={mywatchprojects} selectProject={this.selectProject}/>                                         
+                            <ProjectList items={this.state.mywatchprojects} selectProject={this.selectProject}/>>                                                                     
                         </Col>
                     </Row>
                 </div>
-            )
+            )}else{
+                return(
+                    <div style={{minWidth:"1000px", maxWidth:"1200px"}}> Loading...</div>
+                )
+            }
         }else{
             return(                
                 <Projectinfo programid={this.state.Projectid}/>
@@ -204,14 +253,17 @@ class Projects extends React.Component {
         }
     }
 }
+/*
 var myprojects = [{programid: '0001', projectmame: 'AZNP ULT', status: 'Ongoing', introdate: 'Oct 1, 2019', color: '#0044dd'}, 
                     {programid: '0002', projectmame: 'Rivers', status: 'Ongoing', introdate: 'May 1, 2019', color: '#0044dd'},
                     {programid: '0003', projectmame: 'Knight', status: 'Completed', introdate: 'Apr 1, 2018', color:'#777777'},                    
                     ]
+
 var mywatchprojects = [{programid: '0004', projectmame: 'AZNP ', status: 'Completed', introdate: 'Oct 1, 2019', color:'#777777' },
                         {programid: '0005', projectmame: 'Seagull/Swan', status: 'Completed', introdate: 'Oct 1, 2019', color:'#777777'},
                         {programid: '0006', projectmame: 'ULT', status: 'Completed', introdate: 'Apr 1, 2017', color:'#777777'},
                     ]
+*/
 const  programlist = [{programid: '0001', projectmame: 'AZNP ULT', status: 'Ongoing', introdate: 'Oct 1, 2019', flag_owner:true, flag_watch: false,  color: '#0044dd'}, 
                         {programid: '0002', projectmame: 'Rivers', status: 'Ongoing', introdate: 'May 1, 2019', flag_owner:true, flag_watch: false, color: '#0044dd'},
                         {programid: '0003', projectmame: 'Knight', status: 'Completed', introdate: 'Apr 1, 2018', flag_owner:true, flag_watch: false, color:'#777777'},
