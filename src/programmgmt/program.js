@@ -1,14 +1,14 @@
 import React from 'react'
-import './index.css'
+import '../index.css'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/css/bootstrap-theme.css'
-import { Form,FormControl,Button,ListGroup, Col, Row,Badge } from 'react-bootstrap'
+import {Form, FormControl, Button, ListGroup, Col, Row, Badge } from 'react-bootstrap'
 import GridLayout  from 'react-grid-layout'
-import Projectinfo from './projectinfo'
+import Projectinfo from './programdetail'
 import axios from 'axios'
-import {getUrl} from './common/comutil';
+import {getUrl} from '../common/comutil';
 
-class ProjectList extends React.Component {
+class ProgramGrid extends React.Component {
     constructor(props) {
         super(props);
     this.state = {
@@ -37,7 +37,7 @@ class ProjectList extends React.Component {
                 <Row>
                     <Col style={{textAlign:"center"}}>
                         <h1>
-                            <span class="glyphicon glyphicon-folder-open" aria-hidden="true" style={{color:"#0044dd"}}></span>
+                            <span class="glyphicon glyphicon-folder-open" aria-hidden="true" style={{color:this.state.projects[i].color}}></span>
                         </h1>
                     </Col>
                 </Row>
@@ -172,6 +172,7 @@ class Projectpenal extends React.Component {
         </Col>)
     }
 }
+
 class Projects extends React.Component {
     constructor(props) {
         super(props)      
@@ -233,11 +234,11 @@ class Projects extends React.Component {
                             <Row>
                                 <Col> <h3>My Projects</h3></Col>                               
                             </Row>
-                            <ProjectList items={this.state.myprojects} selectProject={this.selectProject}/>
+                            <ProgramGrid items={this.state.myprojects} selectProject={this.selectProject}/>
                             <Row>
                                 <Col><h3>Watching Projects</h3></Col>
                             </Row>
-                            <ProjectList items={this.state.mywatchprojects} selectProject={this.selectProject}/>>                                                                     
+                            <ProgramGrid items={this.state.mywatchprojects} selectProject={this.selectProject}/>>                                                                     
                         </Col>
                     </Row>
                 </div>
@@ -253,17 +254,7 @@ class Projects extends React.Component {
         }
     }
 }
-/*
-var myprojects = [{programid: '0001', projectmame: 'AZNP ULT', status: 'Ongoing', introdate: 'Oct 1, 2019', color: '#0044dd'}, 
-                    {programid: '0002', projectmame: 'Rivers', status: 'Ongoing', introdate: 'May 1, 2019', color: '#0044dd'},
-                    {programid: '0003', projectmame: 'Knight', status: 'Completed', introdate: 'Apr 1, 2018', color:'#777777'},                    
-                    ]
 
-var mywatchprojects = [{programid: '0004', projectmame: 'AZNP ', status: 'Completed', introdate: 'Oct 1, 2019', color:'#777777' },
-                        {programid: '0005', projectmame: 'Seagull/Swan', status: 'Completed', introdate: 'Oct 1, 2019', color:'#777777'},
-                        {programid: '0006', projectmame: 'ULT', status: 'Completed', introdate: 'Apr 1, 2017', color:'#777777'},
-                    ]
-*/
 const  programlist = [{programid: '0001', projectmame: 'AZNP ULT', status: 'Ongoing', introdate: 'Oct 1, 2019', flag_owner:true, flag_watch: false,  color: '#0044dd'}, 
                         {programid: '0002', projectmame: 'Rivers', status: 'Ongoing', introdate: 'May 1, 2019', flag_owner:true, flag_watch: false, color: '#0044dd'},
                         {programid: '0003', projectmame: 'Knight', status: 'Completed', introdate: 'Apr 1, 2018', flag_owner:true, flag_watch: false, color:'#777777'},

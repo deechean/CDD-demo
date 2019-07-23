@@ -5,7 +5,7 @@ import App from './App'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/css/bootstrap-theme.css'
 import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap'
-import Projects from './project.js';
+import Projects from './programmgmt/program';
 
 
 
