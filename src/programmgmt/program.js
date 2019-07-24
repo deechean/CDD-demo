@@ -6,7 +6,8 @@ import {Form, FormControl, Button, ListGroup, Col, Row, Badge } from 'react-boot
 import GridLayout  from 'react-grid-layout'
 import Projectinfo from './programdetail'
 import axios from 'axios'
-import {getUrl} from '../common/comutil';
+import {getUrl} from '../common/comutil'
+import Select from 'react-select';
 
 class ProgramGrid extends React.Component {
     constructor(props) {
@@ -73,6 +74,11 @@ class Projectpenal extends React.Component {
         this.state = { 
             searchkeywords: '',
             findprogram: [],
+            programs: [],
+            programlistready: false,
+            owners: [],
+            ownerlistready: false,
+            programstatus: []
         }
     
         this.findprogram = this.findprogram.bind(this); 
@@ -80,7 +86,28 @@ class Projectpenal extends React.Component {
 
     }
 
+    componentDidMount(){
+        axios.get(getUrl('/program/findallprogram')).then((response)=>{           
+            this.setState({
+                programlistready: true,
+                programs: response.data,                
+            });
+        }).catch((error)=>{            
+            console.error(error);
+          });
+
+          axios.get(getUrl('/user/fildallusers')).then((response)=>{           
+            this.setState({
+                ownerlistready: true,
+                owners: response.data,                
+            });
+        }).catch((error)=>{            
+            console.error(error);
+          });
+    }
+
     findprogram(){
+        /*
         if (this.state.searchkeywords.length != 0){
             var new_programlist = []
             for (let i = 0; i < programlist.length; i++) {
@@ -92,7 +119,7 @@ class Projectpenal extends React.Component {
                 }            
             }
             this.setState({findprogram: new_programlist})
-        }
+        }*/
     }
 
     addwatch(program_key){
@@ -129,11 +156,37 @@ class Projectpenal extends React.Component {
     }
 
     render(){
+        /*
+        let programarray = []
+        let ownersarray = []
+        if (this.state.ownerlistready&&this.state.programlistready){
+            
+            for (let i = 0;i < this.state.programs.length;i++){
+                programarray.push(
+                    <option>{this.state.programs[i].programname}</option>
+                );
+            }
+            
+            for (let i = 0;i < this.state.owners.length;i++){
+                ownersarray.push(
+                    <option>{this.state.owners[i].name}</option>
+                );
+            }
+        }else{
+            programarray.push(
+                <option>Loading...</option>
+            );
+
+            ownersarray.push(
+                <option>Loading...</option>
+            );
+        }
+        */
         return (
         <Col style={{width: "30%", minWidth:"320px", maxWidth:"350px"}}>
             <ListGroup variant="flush" as="ul">
                 <ListGroup.Item as="li" disabled>
-                    Project Overview
+                   My Program Overview
                 </ListGroup.Item>
                 <ListGroup.Item as="li">
                     <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
@@ -151,20 +204,31 @@ class Projectpenal extends React.Component {
             <ListGroup style={{textAlign: "center"}}>
                 <ListGroup.Item as="li" >
                     <Form>                                    
-                        <Button variant="primary">Create Project</Button>                                    
+                        <Button variant="primary">New Project</Button>                                    
                     </Form>
                 </ListGroup.Item>
             </ListGroup>
             <ListGroup as="ul">
                 <ListGroup.Item as="li">
-                    <Form inline>
-                        <FormControl type="text" placeholder="Search" className="col-xs-2"
-                        onChange={(e) => {
-                            this.setState({
-                                searchkeywords: e.target.value.toLowerCase(),});
-                            }
-                        }/>
-                        &nbsp; <Button variant="primary" onClick={this.findprogram}>Search</Button>
+                    <Form>
+                        <Form.Group as={Row} controlId="Programkeywords">
+                            <Form.Label column sm="3">Program&nbsp;</Form.Label>
+                            <Col sm="9">
+                                <Select isSearchable
+                                    options={this.state.programs}>
+                                </Select>
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} ControlId="Ownerkeywords" >
+                            <Form.Label column sm="3">Owner&nbsp;</Form.Label>
+                            <Col sm="9">
+                                <Select isSearchable 
+                                    options={this.state.owners}>
+                                    
+                                </Select>
+                            </Col>
+                        </Form.Group>
+                        <Button variant="primary" onClick={this.findprogram}>Search Program</Button>                        
                     </Form>
                 </ListGroup.Item>
             </ListGroup>
@@ -180,7 +244,7 @@ class Projects extends React.Component {
         this.state = { 
             userid: 1,
             showProjectAll: true,
-            Projectid: '0000',
+            Projectid: '1',
             myprojectsload: false,
             myprojects:[],            
             mywatchprojectsload:false,
