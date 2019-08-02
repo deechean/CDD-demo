@@ -1,8 +1,9 @@
 import React from 'react'
 import '../index.css'
+import './programsearch.css'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/css/bootstrap-theme.css'
-import {Form, FormControl, Button, ListGroup, Col, Row, Badge } from 'react-bootstrap'
+import {Form, Button, ListGroup, Col, Row, Badge } from 'react-bootstrap'
 import {getUrl} from '../common/comutil'
 import Autosuggest from 'react-autosuggest'
 import axios from 'axios';
@@ -30,13 +31,6 @@ class Autosuggest2 extends React.Component {
     }
     componentDidMount(){              
         axios.get(getUrl(this.state.url)).then((response)=>{ 
-             
-            console.log('Projectpenal--get programs')  
-            /* 
-            let array = response.data.map(function(data,index){
-                return data.name;
-            });
-            */
             this.setState({                
                 options: response.data,                
             });
@@ -114,13 +108,16 @@ class Projectpenal extends React.Component {
         super(props)      
     
         this.state = { 
-            searchkeywords: '',
+            userearchkey: '',
             findprogram: [],
-            programs: [],            
+            programs: [],   
+            watchprograms: [],         
         }
     
         this.findprogram = this.findprogram.bind(this); 
         this.addwatch = this.addwatch.bind(this); 
+        this.programkeyref = React.createRef();
+        this.userkeyref = React.createRef();
     }
 
     componentDidMount(){
@@ -134,21 +131,46 @@ class Projectpenal extends React.Component {
     }
 
     findprogram(){
-        if (this.state.searchkeywords.length != 0){
-            var new_programlist = []
-            for (let i = 0; i < this.state.programs.length; i++) {                
+        var new_programlist = []
+        let programsearchkey= this.programkeyref.current.state.value.toLowerCase()
+        if(programsearchkey.length != 0 ){            
+            for (let i = 0; i < this.state.programs.length; i++) {     
+                console.log('ownername:'+this.state.programs[i].ownername)
                 var a = this.state.programs[i].name.toLowerCase();
-                var b = a.match(this.state.searchkeywords.trim());
+                var b = a.match(programsearchkey.trim());
                 if (b!=null){
                     new_programlist.push(this.state.programs[i])
                 }            
             }
-            this.setState({findprogram: new_programlist})
+        }else{
+            this.state.programs.map((programs)=>{new_programlist.push(programs)})
         }
+        
+        let new_programlist2=[]
+        let userearchkey = this.userkeyref.current.state.value.toLowerCase()
+        if(userearchkey.length != 0){
+            for (let i = 0; i < new_programlist.length; i++) {                
+                var a = new_programlist[i].name.toLowerCase();
+                var b = a.match(userearchkey.trim());
+                if (b!=null){
+                    new_programlist2.push(this.state.programs[i])
+                }            
+            }
+        }else{
+            new_programlist.map((programs)=>{new_programlist2.push(programs)})
+        }
+
+        this.setState({findprogram: new_programlist2})
     }
 
     addwatch(program_key){
-        //alert(program_key);
+        alert(this.props.state)
+        /*
+        for (let i=0; i < this.props.state.mywatchprojects.length; i++){
+            if (program_key == this.props.state.mywatchprojects[i].id ){
+                alert("The program you select has already under your watch.")
+            }
+        }*/
     }
 
     renderFindProgram(){
@@ -159,16 +181,40 @@ class Projectpenal extends React.Component {
                 Find {this.state.findprogram.length} matched programs.
             </div>)   
         for (let i = 0; i < this.state.findprogram.length; i++){
-            layout.push({i: i, x: i, y: 0, w: 1, h: 1})
-        
+            layout.push({i: i, x: i, y: 0, w: 1, h: 1})        
             array.push(
                     <ListGroup.Item as="li">
-                        <span class="glyphicon glyphicon-folder-open" aria-hidden="true" >
-                        </span>&nbsp;&nbsp;{this.state.findprogram[i].projectmame}&nbsp;&nbsp;
-                        <Button id = {this.state.findprogram[i].programid} variant="primary" style={{float: "right"}} disabled={this.state.findprogram[i].flag_watch||this.state.findprogram[i].flag_owner ? true: false} 
-                            onClick={(e) => this.addwatch(this.state.findprogram[i].programid)}>
-                            <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
-                        </Button>
+                        <table> 
+                            <tbody>
+                                <tr style={{fontSize: "14px"}}>
+                                    <td rowspan ="3">
+                                        <span 
+                                            class="glyphicon glyphicon-folder-open" 
+                                            aria-hidden="true" 
+                                            style={{color: this.state.findprogram[i].color}}></span>
+                                    </td>
+                                    <td >{this.state.findprogram[i].name}</td>
+                                    <td rowspan ="3">
+                                        <Button id = {this.state.findprogram[i].id} variant="primary" 
+                                            style={{float: "right"}} 
+                                            disabled={this.state.findprogram[i].flag_watch||this.state.findprogram[i].flag_owner ? true: false} 
+                                            onClick={(e) => this.addwatch(this.state.findprogram[i].id)}>
+                                            <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
+                                        </Button>
+                                    </td>
+                                </tr>
+                                <tr>                                     
+                                    <td> 
+                                        Owner:{this.state.findprogram[i].ownername}
+                                    </td>
+                                </tr>  
+                                <tr>                                    
+                                    <td> 
+                                        Status:{this.state.findprogram[i].status}
+                                    </td>
+                                </tr>                                 
+                            </tbody>
+                        </table>
                     </ListGroup.Item>
             )
         }
@@ -179,7 +225,7 @@ class Projectpenal extends React.Component {
             </ListGroup>            
         )
     }
-
+    
     render(){
         return (
         <Col style={{width: "30%", minWidth:"320px", maxWidth:"350px"}}>
@@ -213,13 +259,21 @@ class Projectpenal extends React.Component {
                         <Form.Group as={Row} controlId="Programkeywords">
                             <Form.Label column sm="3">Program&nbsp;</Form.Label>
                             <Col sm="9">
-                                <Autosuggest2 url="/program/findallprogram" placeholder="Input a program name" onChange=""/>
+                                <Autosuggest2 
+                                    id = "programsearchkeyinput"
+                                    ref = {this.programkeyref}
+                                    url="/program/findallprogram" 
+                                    placeholder="Input a program name"/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} ControlId="Ownerkeywords" >
                             <Form.Label column sm="3">Owner&nbsp;</Form.Label>
                             <Col sm="9">
-                                <Autosuggest2 url="/user/fildallusers" placeholder="Input a name"/>
+                                <Autosuggest2 
+                                    id="userearchkeyinput"
+                                    ref = {this.userkeyref}
+                                    url="/user/fildallusers" 
+                                    placeholder="Input a name"/>
                             </Col>
                         </Form.Group>
                         <Button variant="primary" onClick={this.findprogram}>Search Program</Button>                        

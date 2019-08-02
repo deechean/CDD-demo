@@ -38,7 +38,10 @@ class ProgramGrid extends React.Component {
                 <Row>
                     <Col style={{textAlign:"center"}}>
                         <h1>
-                            <span class="glyphicon glyphicon-folder-open" aria-hidden="true" style={{color:this.state.projects[i].color}}></span>
+                            <span class="glyphicon glyphicon-folder-open" 
+                                aria-hidden="true" 
+                                style={{color:this.state.projects[i].color}}>
+                            </span>
                         </h1>
                     </Col>
                 </Row>
@@ -132,7 +135,7 @@ class Projects extends React.Component {
                             <Row>
                                 <Col><h3>Watching Projects</h3></Col>
                             </Row>
-                            <ProgramGrid items={this.state.mywatchprojects} selectProject={this.selectProject}/>>                                                                     
+                            <ProgramGrid items={this.state.mywatchprojects} selectProject={this.selectProject}/>                                                                   
                         </Col>
                     </Row>
                 </div>
@@ -148,20 +151,5 @@ class Projects extends React.Component {
         }
     }
 }
-
-const  programlist = [{programid: '0001', projectmame: 'AZNP ULT', status: 'Ongoing', introdate: 'Oct 1, 2019', flag_owner:true, flag_watch: false,  color: '#0044dd'}, 
-                        {programid: '0002', projectmame: 'Rivers', status: 'Ongoing', introdate: 'May 1, 2019', flag_owner:true, flag_watch: false, color: '#0044dd'},
-                        {programid: '0003', projectmame: 'Knight', status: 'Completed', introdate: 'Apr 1, 2018', flag_owner:true, flag_watch: false, color:'#777777'},
-                        {programid: '0004', projectmame: 'AZNP ', status: 'Completed', introdate: 'Oct 1, 2019', flag_owner:false, flag_watch: true, color:'#777777' },
-                        {programid: '0005', projectmame: 'Seagull/Swan', status: 'Completed', introdate: 'Oct 1, 2019', flag_owner:false, flag_watch: true, color:'#777777'},
-                        {programid: '0006', projectmame: 'ULT', status: 'Completed', introdate: 'Apr 1, 2017', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {programid: '0007', projectmame: 'Mama', status: 'Completed', introdate: 'Oct 1, 2018', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {programid: '0008', projectmame: 'Mantis/LonePine', status: 'Completed', introdate: 'May 1, 2018', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {programid: '0009', projectmame: 'ULT', status: 'Completed', introdate: 'Oct 1, 2017', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {programid: '0010', projectmame: 'Cicada/Tsunami', status: 'Completed', introdate: 'Dec 1, 2017', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {programid: '0011', projectmame: 'Astro', status: 'Completed', introdate: 'Apr 1, 2017',flag_owner:false, flag_watch: false,  color:'#777777'},
-                        {programid: '0012', projectmame: 'Birds', status: 'Completed', introdate: 'Nov 1, 2015',flag_owner:false, flag_watch: false,  color:'#777777'},
-                        {programid: '0013', projectmame: 'Dorado/Marlin', status: 'Completed', introdate: 'Nov 1, 2014', flag_owner:false, flag_watch: false, color:'#777777'},
-                        {programid: '0014', projectmame: 'Star/Stella', status: 'Completed', introdate: 'Jun 1, 2012', flag_owner:false, flag_watch: false, color:'#777777'},]
 
 export default Projects;
